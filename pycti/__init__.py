@@ -9,6 +9,7 @@ from .connector.opencti_connector_helper import (
     OpenCTIConnectorHelper,
     get_config_variable,
 )
+from .connector.opencti_metric_handler import OpenCTIMetricHandler
 from .entities.opencti_attack_pattern import AttackPattern
 from .entities.opencti_campaign import Campaign
 from .entities.opencti_case import Case
@@ -81,6 +82,7 @@ __all__ = [
     "OpenCTIApiWork",
     "OpenCTIConnector",
     "OpenCTIConnectorHelper",
+    "OpenCTIMetricHandler",
     "OpenCTIStix2",
     "OpenCTIStix2Splitter",
     "OpenCTIStix2Update",

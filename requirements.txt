@@ -9,3 +9,4 @@ setuptools~=66.1.1
 filigran_sseclient~=1.0.0
 stix2~=3.0.1
 cachetools~=5.3.0
+prometheus-client~=0.13.1

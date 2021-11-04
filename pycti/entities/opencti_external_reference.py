@@ -24,6 +24,7 @@ class ExternalReference:
             url
             hash
             external_id
+            x_metis_modified_on_s
             importFiles {
                 edges {
                     node {
@@ -158,6 +159,7 @@ class ExternalReference:
         description = kwargs.get("description", None)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if source_name is not None and url is not None:
             self.opencti.log(
@@ -187,6 +189,7 @@ class ExternalReference:
                         "url": url,
                         "x_opencti_stix_ids": x_opencti_stix_ids,
                         "update": update,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )

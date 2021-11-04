@@ -18,6 +18,7 @@ class StixCyberObservable:
             spec_version
             created_at
             updated_at
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -512,6 +513,7 @@ class StixCyberObservable:
         object_label = kwargs.get("objectLabel", None)
         external_references = kwargs.get("externalReferences", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         create_indicator = (
             observable_data["x_opencti_create_indicator"]
@@ -618,6 +620,7 @@ class StixCyberObservable:
                 "objectLabel": object_label,
                 "externalReferences": external_references,
                 "update": update,
+                "x_metis_modified_on_s": x_metis_modified_on_s,
             }
             query = """
                 mutation StixCyberObservableAdd(
@@ -1305,8 +1308,8 @@ class StixCyberObservable:
                     if custom_attributes is not None
                     else self.properties
                 )
-                + """    
-                            }                               
+                + """
+                            }
                         }
                     }
              """
@@ -1380,14 +1383,17 @@ class StixCyberObservable:
                         description
                         created
                         modified
+                        x_metis_modified_on_s
                     }
                     ... on Organization {
                         x_opencti_organization_type
                         x_opencti_reliability
+                        x_metis_modified_on_s
                     }
                     ... on Individual {
                         x_opencti_firstname
                         x_opencti_lastname
+                        x_metis_modified_on_s
                     }
                 }
             """
@@ -1459,6 +1465,7 @@ class StixCyberObservable:
                             x_opencti_color
                             created
                             modified
+                            x_metis_modified_on_s
                         }
                     }
                 }

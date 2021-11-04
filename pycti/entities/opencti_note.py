@@ -15,6 +15,7 @@ class Note:
             spec_version
             created_at
             updated_at
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -400,6 +401,7 @@ class Note:
         authors = kwargs.get("authors", None)
         update = kwargs.get("update", False)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if content is not None:
             self.opencti.log("info", "Creating Note {" + content + "}.")
@@ -433,6 +435,7 @@ class Note:
                         "authors": authors,
                         "x_opencti_stix_ids": x_opencti_stix_ids,
                         "update": update,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )

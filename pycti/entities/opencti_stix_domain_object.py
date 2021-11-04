@@ -18,6 +18,7 @@ class StixDomainObject:
             spec_version
             created_at
             updated_at
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -856,6 +857,7 @@ class StixDomainObject:
                             x_opencti_color
                             created
                             modified
+                            x_metis_modified_on_s
                         }
                     }
                 }

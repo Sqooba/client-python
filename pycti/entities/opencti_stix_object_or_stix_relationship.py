@@ -13,6 +13,7 @@ class StixObjectOrStixRelationship:
                 spec_version
                 created_at
                 updated_at
+                x_metis_modified_on_s
             }
             ... on StixDomainObject {
                 createdBy {

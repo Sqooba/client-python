@@ -26,6 +26,7 @@ class StixCoreRelationship:
             lang
             created
             modified
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -529,6 +530,7 @@ class StixCoreRelationship:
         external_references = kwargs.get("externalReferences", None)
         kill_chain_phases = kwargs.get("killChainPhases", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         self.opencti.log(
             "info",
@@ -547,6 +549,7 @@ class StixCoreRelationship:
                         standard_id
                         entity_type
                         parent_types
+                        x_metis_modified_on_s
                     }
                 }
             """
@@ -572,6 +575,7 @@ class StixCoreRelationship:
                     "externalReferences": external_references,
                     "killChainPhases": kill_chain_phases,
                     "update": update,
+                    "x_metis_modified_on_s": x_metis_modified_on_s,
                 }
             },
         )
@@ -674,6 +678,7 @@ class StixCoreRelationship:
                             x_opencti_color
                             created
                             modified
+                            x_metis_modified_on_s
                         }
                     }
                 }
@@ -1145,6 +1150,9 @@ class StixCoreRelationship:
                 if "kill_chain_phases_ids" in extras
                 else None,
                 update=update,
+                x_metis_modified_on_s=stix_relation["x_metis_modified_on_s"]
+                if "x_metis_modified_on_s" in stix_relation
+                else None,
             )
         else:
             self.opencti.log(

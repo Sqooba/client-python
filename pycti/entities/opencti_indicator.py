@@ -22,6 +22,7 @@ class Indicator:
             spec_version
             created_at
             updated_at
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -354,6 +355,7 @@ class Indicator:
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
         create_observables = kwargs.get("x_opencti_create_observables", False)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if (
             name is not None
@@ -414,6 +416,7 @@ class Indicator:
                         "killChainPhases": kill_chain_phases,
                         "createObservables": create_observables,
                         "update": update,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )

@@ -14,6 +14,7 @@ class Campaign:
             spec_version
             created_at
             updated_at
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -258,6 +259,7 @@ class Campaign:
         objective = kwargs.get("objective", None)
         update = kwargs.get("update", False)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if name is not None and description is not None:
             self.opencti.log("info", "Creating Campaign {" + name + "}.")
@@ -293,6 +295,7 @@ class Campaign:
                         "objective": objective,
                         "update": update,
                         "x_opencti_stix_ids": x_opencti_stix_ids,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )

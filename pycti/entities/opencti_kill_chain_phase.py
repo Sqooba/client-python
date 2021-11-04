@@ -18,6 +18,7 @@ class KillChainPhase:
             modified
             created_at
             updated_at
+            x_metis_modified_on_s
         """
 
     """
@@ -133,6 +134,7 @@ class KillChainPhase:
         kill_chain_name = kwargs.get("kill_chain_name", None)
         phase_name = kwargs.get("phase_name", None)
         x_opencti_order = kwargs.get("x_opencti_order", 0)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if kill_chain_name is not None and phase_name is not None:
             self.opencti.log("info", "Creating Kill-Chain-Phase {" + phase_name + "}.")
@@ -157,6 +159,7 @@ class KillChainPhase:
                         "kill_chain_name": kill_chain_name,
                         "phase_name": phase_name,
                         "x_opencti_order": x_opencti_order,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )

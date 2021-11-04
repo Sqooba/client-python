@@ -22,6 +22,7 @@ class MarkingDefinition:
             modified
             created_at
             updated_at
+            x_metis_modified_on_s
         """
 
     @staticmethod
@@ -151,6 +152,7 @@ class MarkingDefinition:
         x_opencti_color = kwargs.get("x_opencti_color", None)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if definition is not None and definition_type is not None:
             query = (
@@ -177,6 +179,7 @@ class MarkingDefinition:
                         "modified": modified,
                         "x_opencti_stix_ids": x_opencti_stix_ids,
                         "update": update,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )
@@ -294,6 +297,9 @@ class MarkingDefinition:
                 if "x_opencti_stix_ids" in stix_object
                 else None,
                 update=update,
+                x_metis_modified_on_s=stix_object["x_metis_modified_on_s"]
+                if "x_metis_modified_on_s" in stix_object
+                else None,
             )
         else:
             self.opencti.log(

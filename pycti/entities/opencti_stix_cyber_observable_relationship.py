@@ -15,6 +15,7 @@ class StixCyberObservableRelationship:
             relationship_type
             start_time
             stop_time
+            x_metis_modified_on_s
             from {
                 ... on StixCyberObservable {
                     id
@@ -214,6 +215,7 @@ class StixCyberObservableRelationship:
         object_marking = kwargs.get("objectMarking", None)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
         self.opencti.log(
             "info",
             "Creating stix_observable_relationship {" + from_id + ", " + to_id + "}.",
@@ -244,6 +246,7 @@ class StixCyberObservableRelationship:
                     "objectMarking": object_marking,
                     "x_opencti_stix_ids": x_opencti_stix_ids,
                     "update": update,
+                    "x_metis_modified_on_s": x_metis_modified_on_s,
                 }
             },
         )

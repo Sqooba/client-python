@@ -16,6 +16,7 @@ class Report:
             spec_version
             created_at
             updated_at
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -428,6 +429,7 @@ class Report:
         published = kwargs.get("published", None)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if name is not None and description is not None and published is not None:
             self.opencti.log("info", "Creating Report {" + name + "}.")
@@ -438,6 +440,7 @@ class Report:
                         standard_id
                         entity_type
                         parent_types            
+                        x_metis_modified_on_s
                     }
                 }
             """
@@ -461,6 +464,7 @@ class Report:
                         "published": published,
                         "x_opencti_stix_ids": x_opencti_stix_ids,
                         "update": update,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )
@@ -631,6 +635,9 @@ class Report:
                 if "x_opencti_stix_ids" in stix_object
                 else None,
                 update=update,
+                x_metis_modified_on_s=stix_object["x_metis_modified_on_s"]
+                if "x_metis_modified_on_s" in stix_object
+                else None,
             )
         else:
             self.opencti.log("error", "[opencti_report] Missing parameters: stixObject")

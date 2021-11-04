@@ -20,6 +20,7 @@ class StixSightingRelationship:
             created
             modified
             confidence
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -478,6 +479,7 @@ class StixSightingRelationship:
         external_references = kwargs.get("externalReferences", None)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         self.opencti.log(
             "info",
@@ -514,6 +516,7 @@ class StixSightingRelationship:
                     "externalReferences": external_references,
                     "x_opencti_stix_ids": x_opencti_stix_ids,
                     "update": update,
+                    "x_metis_modified_on_s": x_metis_modified_on_s,
                 }
             },
         )

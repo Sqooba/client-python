@@ -14,6 +14,7 @@ class CourseOfAction:
             spec_version
             created_at
             updated_at
+            x_metis_modified_on_s
             createdBy {
                 ... on Identity {
                     id
@@ -257,6 +258,7 @@ class CourseOfAction:
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
         x_mitre_id = kwargs.get("x_mitre_id", None)
         update = kwargs.get("update", False)
+        x_metis_modified_on_s = kwargs.get("x_metis_modified_on_s", False)
 
         if name is not None and description is not None:
             self.opencti.log("info", "Creating Course Of Action {" + name + "}.")
@@ -290,6 +292,7 @@ class CourseOfAction:
                         "x_opencti_stix_ids": x_opencti_stix_ids,
                         "x_mitre_id": x_mitre_id,
                         "update": update,
+                        "x_metis_modified_on_s": x_metis_modified_on_s,
                     }
                 },
             )

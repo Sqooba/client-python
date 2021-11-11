@@ -580,6 +580,11 @@ class StixCyberObservable:
             if "x_opencti_score" in observable_data
             else x_opencti_score
         )
+        x_metis_modified_on_s = (
+            observable_data["x_metis_modified_on_s"]
+            if "x_metis_modified_on_s" in observable_data
+            else x_metis_modified_on_s
+        )
         if simple_observable_description is not None:
             x_opencti_description = simple_observable_description
 
@@ -666,6 +671,7 @@ class StixCyberObservable:
                     $XOpenCTIHostname: XOpenCTIHostnameAddInput
                     $XOpenCTIText: XOpenCTITextAddInput,
                     $XOpenCTIUserAgent: XOpenCTIUserAgentAddInput
+                    $x_metis_modified_on_s: Boolean,
                 ) {
                     stixCyberObservableAdd(
                         type: $type,
@@ -703,6 +709,7 @@ class StixCyberObservable:
                         XOpenCTIHostname: $XOpenCTIHostname,
                         XOpenCTIText: $XOpenCTIText,
                         XOpenCTIUserAgent: $XOpenCTIUserAgent,
+                        x_metis_modified_on_s: $x_metis_modified_on_s,
                     ) {
                         id
                         standard_id

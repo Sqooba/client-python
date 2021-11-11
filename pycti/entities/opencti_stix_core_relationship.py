@@ -512,7 +512,6 @@ class StixCoreRelationship:
                         standard_id
                         entity_type
                         parent_types
-                        x_metis_modified_on_s
                     }
                 }
             """

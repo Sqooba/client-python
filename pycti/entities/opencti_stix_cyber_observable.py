@@ -584,6 +584,12 @@ class StixCyberObservable:
                 "description", observable_data
             )
 
+        x_metis_modified_on_s = (
+            observable_data["x_metis_modified_on_s"]
+            if "x_metis_modified_on_s" in observable_data
+            else x_metis_modified_on_s
+        )
+
         if simple_observable_description is not None:
             x_opencti_description = simple_observable_description
 
@@ -683,6 +689,7 @@ class StixCyberObservable:
                     $PhoneNumber: PhoneNumberAddInput
                     $PaymentCard: PaymentCardAddInput
                     $MediaContent: MediaContentAddInput
+                    $x_metis_modified_on_s: Boolean
                 ) {
                     stixCyberObservableAdd(
                         type: $type,
@@ -723,6 +730,7 @@ class StixCyberObservable:
                         PhoneNumber: $PhoneNumber
                         PaymentCard: $PaymentCard
                         MediaContent: $MediaContent
+                        x_metis_modified_on_s: $x_metis_modified_on_s
                     ) {
                         id
                         standard_id
@@ -2023,7 +2031,7 @@ class StixCyberObservable:
                                     name
                                     description
                                     report_types
-                                    published                                    
+                                    published
                                 }
                             }
                         }
@@ -2162,7 +2170,7 @@ class StixCyberObservable:
                                     modified
                                     attribute_abstract
                                     content
-                                    authors                                
+                                    authors
                                 }
                             }
                         }
@@ -2314,7 +2322,7 @@ class StixCyberObservable:
                                                     }
                                                 }
                                             }
-                                        }    
+                                        }
                                     }
                                 }
                             }

@@ -14,11 +14,11 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import pika
 from pika.exceptions import NackError, UnroutableError
-from prometheus_client import start_http_server, Counter, Enum
 from sseclient import SSEClient
 
 from pycti.api.opencti_api_client import OpenCTIApiClient
 from pycti.connector.opencti_connector import OpenCTIConnector
+from pycti.connector.opencti_metric_handler import OpenCTIMetricHandler
 from pycti.utils.opencti_stix2_splitter import OpenCTIStix2Splitter
 
 TRUTHY: List[str] = ["yes", "true", "True"]
@@ -180,10 +180,12 @@ class ListenQueue(threading.Thread):
             message = self.callback(json_data["event"])
             self.helper.api.work.to_processed(work_id, message)
         except Exception as e:  # pylint: disable=broad-except
+            self.helper.metric.inc("error_count")
             logging.exception("Error in message processing, reporting error to API")
             try:
                 self.helper.api.work.to_processed(work_id, str(e), True)
             except:  # pylint: disable=bare-except
+                self.helper.metric.inc("error_count")
                 logging.error("Failing reporting the processing")
 
     def run(self) -> None:
@@ -221,7 +223,7 @@ class ListenQueue(threading.Thread):
 
 
 class PingAlive(threading.Thread):
-    def __init__(self, connector_id, api, get_state, set_state) -> None:
+    def __init__(self, connector_id, api, get_state, set_state, metric) -> None:
         threading.Thread.__init__(self)
         self.connector_id = connector_id
         self.in_error = False
@@ -229,6 +231,7 @@ class PingAlive(threading.Thread):
         self.get_state = get_state
         self.set_state = set_state
         self.exit_event = threading.Event()
+        self.metric = metric
 
     def ping(self) -> None:
         while not self.exit_event.is_set():
@@ -253,8 +256,10 @@ class PingAlive(threading.Thread):
                 if self.in_error:
                     self.in_error = False
                     logging.error("API Ping back to normal")
+                self.metric.inc("ping_api_count")
             except Exception:  # pylint: disable=broad-except
                 self.in_error = True
+                self.metric.inc("ping_api_error")
                 logging.error("Error pinging the API")
             self.exit_event.wait(40)
 
@@ -541,7 +546,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             ["connector", "validate_before_import"],
         )
         # Start up the server to expose the metrics.
-        self.expose_metrics = get_config_variable(
+        expose_metrics = get_config_variable(
             "CONNECTOR_EXPOSE_METRICS",
             ["connector", "expose_metrics"],
             config,
@@ -551,43 +556,14 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         metrics_port = get_config_variable(
             "CONNECTOR_METRICS_PORT", ["connector", "metrics_port"], config, True, 9095
         )
-        self.metrics = None
-        if self.expose_metrics:
-            self.log_info(f"Exposing metrics on port {metrics_port}")
-            start_http_server(metrics_port)
-
-            self.metrics = {
-                "bundle_send": Counter(
-                    "bundle_send",
-                    "Number of bundle send",
-                ),
-                "record_send": Counter(
-                    "record_send",
-                    "Number of record (objects per bundle) send",
-                ),
-                "run_count": Counter(
-                    "run_count",
-                    "Number of run",
-                ),
-                "error_count": Counter(
-                    "error_count",
-                    "Number of error",
-                ),
-                "client_error_count": Counter(
-                    "client_error_count",
-                    "Number of client error",
-                ),
-                "state": Enum(
-                    "state", "State of connector", states=["idle", "running", "stopped"]
-                ),
-            }
+        self.metric = OpenCTIMetricHandler(expose_metrics, metrics_port)
 
         # Configure logger
         numeric_level = getattr(
             logging, self.log_level.upper() if self.log_level else "INFO", None
         )
         if not isinstance(numeric_level, int):
-            self.metric_inc("error_count")
+            self.metric.inc("error_count")
             raise ValueError(f"Invalid log level: {self.log_level}")
         logging.basicConfig(level=numeric_level)
 
@@ -618,32 +594,12 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         # Start ping thread
         if not self.connect_run_and_terminate:
             self.ping = PingAlive(
-                self.connector.id, self.api, self.get_state, self.set_state
+                self.connector.id, self.api, self.get_state, self.set_state, self.metric
             )
             self.ping.start()
 
         # self.listen_stream = None
         self.listen_queue = None
-
-    def metric_inc(self, metric: str, n: int = 1):
-        """Increase the given metric counter by `n`.
-
-        :param metric: metric name
-        :type metric: str
-        :param n: increase the counter by `n`
-        :type n: int
-        """
-        if self.metrics is not None:
-            self.metrics[metric].inc(n)
-
-    def metric_state(self, state: str):
-        """Set the state of the `state` metric.
-
-        :param state: new `state` to set
-        :type state: str
-        """
-        if self.metrics is not None:
-            self.metrics["state"].state(state)
 
     def stop(self) -> None:
         if self.listen_queue:
@@ -703,6 +659,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             if initial_state != remote_state:
                 self.api.connector.ping(self.connector_id, initial_state)
         except Exception:  # pylint: disable=broad-except
+            self.metric.inc("error_count")
             logging.error("Error pinging the API")
 
     def listen(self, message_callback: Callable[[Dict], str]) -> None:
@@ -839,6 +796,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             bundles = stix2_splitter.split_bundle(bundle, True, event_version)
 
         if len(bundles) == 0:
+            self.metric.inc("error_count")
             raise ValueError("Nothing to import")
 
         if work_id:
@@ -923,10 +881,10 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                 ),
             )
             logging.info("Bundle has been sent")
-            self.metric_inc("bundle_send")
+            self.metric.inc("bundle_send")
         except (UnroutableError, NackError) as e:
             logging.error("Unable to send bundle, retry...%s", e)
-            self.metric_inc("error_count")
+            self.metric.inc("error_count")
             self._send_bundle(channel, bundle, **kwargs)
 
     def stix2_get_embedded_objects(self, item) -> Dict:
